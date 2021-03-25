@@ -5,8 +5,15 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            posts: []
+            posts: [],
+            searchboxText: ''
         }
+
+        this.handleSearchingClientSide = this.handleSearchingClientSide.bind(this);
+    }
+
+    handleSearchingClientSide(text) {
+        this.setState({searchboxText: text})
     }
 
     componentDidMount() {
@@ -24,38 +31,65 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-                <Table data={ this.state.posts }/>
+                <Table data={ this.state.posts }
+                       onSearchingClientSide={this.handleSearchingClientSide}
+                       searchboxText={ this.state.searchboxText }/>
             </div>
         );
     }
 }
 
-function Table(props) {
-    return (
-        <table className="table">
-            <caption>Jumlah posts: {props.data.length}</caption>
-            <thead>
-            <tr>
-                <th>Id</th>
-                <th>Title</th>
-                <th>Body</th>
-            </tr>
-            </thead>
-            <tbody>
-            {(props.data.length > 0) ? props.data.map((post, index) => {
-                return (
-                    <tr key={index}>
-                        <td>{post.id}</td>
-                        <td>{post.title}</td>
-                        <td>{post.body}</td>
-                    </tr>
-                )
-            }) : <tr>
-                <td colSpan="3">Loading...</td>
-            </tr>}
-            </tbody>
-        </table>
-    );
+class Table extends Component{
+
+    constructor(props) {
+        super(props);
+        this.handleSearchClientSide = this.handleSearchClientSide.bind(this);
+    }
+
+    handleSearchClientSide(e) {
+        this.props.onSearchingClientSide(e.target.value);
+    }
+
+    render() {
+        const filteredPosts = this.props.data.filter(post => post.title.indexOf(this.props.searchboxText) > -1)
+
+        return (
+            <table className="table">
+                <caption>Jumlah posts: {filteredPosts.length}</caption>
+                <thead>
+                <tr>
+                    <th colSpan="3">
+                        <form>
+                            <input value={this.props.searchboxText}
+                                   onChange={this.handleSearchClientSide}
+                                   type="text"
+                                   name="search" placeholder="Client side searching..."/>
+                            <input type="text" placeholder="Server side searching..."/>
+                        </form>
+                    </th>
+                </tr>
+                <tr>
+                    <th>Id</th>
+                    <th>Title</th>
+                    <th>Body</th>
+                </tr>
+                </thead>
+                <tbody>
+                {(filteredPosts.length > 0) ? filteredPosts.map((post, index) => {
+                    return (
+                        <tr key={index}>
+                            <td>{post.id}</td>
+                            <td>{post.title}</td>
+                            <td>{post.body}</td>
+                        </tr>
+                    )
+                }) : <tr>
+                    <td colSpan="3">{this.props.searchboxText ? 'Empty result' : 'Loading'}</td>
+                </tr>}
+                </tbody>
+            </table>
+        );
+    }
 }
 
 export default App;

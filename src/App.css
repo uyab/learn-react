@@ -5,3 +5,6 @@
 table.table {
   max-height: 80vh;
 }
+input {
+  width: 100%;
+}
