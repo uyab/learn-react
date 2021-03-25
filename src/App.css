@@ -2,3 +2,6 @@
   text-align: center;
   padding: 50px;
 }
+table.table {
+  max-height: 80vh;
+}

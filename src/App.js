@@ -32,7 +32,7 @@ class App extends Component {
 
 function Table(props) {
     return (
-        <table>
+        <table className="table">
             <caption>Jumlah posts: {props.data.length}</caption>
             <thead>
             <tr>
